@@ -118,13 +118,15 @@
         covers.curr = createCover(queueState.currentEntity.value, "FullscreenPlayerDesktopPoster_cover_queueActive");
         covers.prev = createCover(queueState.prevEntity?.value, "FullscreenPlayerDesktopPoster_cover_queuePrev");
         covers.next = createCover(queueState.nextEntity?.value, "FullscreenPlayerDesktopPoster_cover_queueNext");
-        posterRoot.querySelector(".FullscreenPlayerDesktopControls_root__tviu4")?.addEventListener("click", () => {
-            const status = window.pulsesyncApi?.playerInstance?.state?.playerState?.status?.value;
-            if (status === "paused" || status === "idle") {
-                window.pulsesyncApi.play();
-            }
-            else {
-                window.pulsesyncApi.pause();
+        posterRoot.querySelector(".FullscreenPlayerDesktopControls_root__tviu4")?.addEventListener("click", (ev) => {
+            if (ev.target === ev.currentTarget) {
+                const status = window.pulsesyncApi?.playerInstance?.state?.playerState?.status?.value;
+                if (status === "paused" || status === "idle") {
+                    window.pulsesyncApi.play();
+                }
+                else {
+                    window.pulsesyncApi.pause();
+                }
             }
         });
         updateColors();
