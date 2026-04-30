@@ -32,7 +32,7 @@
 }
 
 .FullscreenPlayerDesktopControls_root__tviu4 {
-    transition: scale 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: scale 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity var(--ym-duration-transition);
 }
 
 .FullscreenPlayerDesktopPoster_root__d__YD:has(.FullscreenPlayerDesktopPoster_cover_queuePaused) > .FullscreenPlayerDesktopControls_root__tviu4 {
