@@ -43,26 +43,38 @@ div:has(.FullscreenPlayerDesktopContent_additionalContent__tuuy7) :is(.Fullscree
     opacity: 0;
 }
 
+@property --cover_width_multiplier {
+    syntax: '<number>';
+    initial-value: 25;
+    inherits: true;
+}
+
+@property --screen_width_multiplier {
+    syntax: '<number>';
+    initial-value: 100;
+    inherits: true;
+}
+
 .FullscreenPlayerDesktopPoster_cover_queuePrev {
-    transform: translate(calc(-50vw - var(--fullscreen-player-poster-size-px) * 0.2), 0) scale(0.8);
+    transform: translate(calc(-50vw * var(--screen-width-multiplier) / 100 - var(--fullscreen-player-poster-size-px) * var(--cover-width-multiplier) / 100 * 0.8), 0) scale(0.8);
     opacity: 1;
     z-index: 300;
 }
 
 .FullscreenPlayerDesktopPoster_cover_queuePrev_out {
-    transform: translate(calc(-50vw - var(--fullscreen-player-poster-size-px) * 0.5), 0) scale(0.5);
+    transform: translate(calc(-50vw * var(--screen-width-multiplier) / 100 - var(--fullscreen-player-poster-size-px) * var(--cover-width-multiplier) / 100 * 0.5), 0) scale(0.5);
     opacity: 0;
     z-index: 299;
 }
 
 .FullscreenPlayerDesktopPoster_cover_queueNext {
-    transform: translate(calc(50vw + var(--fullscreen-player-poster-size-px) * 0.2), 0) scale(0.8);
+    transform: translate(calc(50vw * var(--screen-width-multiplier) / 100 + var(--fullscreen-player-poster-size-px) * var(--cover-width-multiplier) / 100 * 0.8), 0) scale(0.8);
     opacity: 1;
     z-index: 300;
 }
 
 .FullscreenPlayerDesktopPoster_cover_queueNext_out {
-    transform: translate(calc(50vw + var(--fullscreen-player-poster-size-px) * 0.5), 0) scale(0.5);
+    transform: translate(calc(50vw * var(--screen-width-multiplier) / 100 + var(--fullscreen-player-poster-size-px) * var(--cover-width-multiplier) / 100 * 0.5), 0) scale(0.5);
     opacity: 0;
     z-index: 299;
 }

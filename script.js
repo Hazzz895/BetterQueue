@@ -26,11 +26,31 @@
     let triggerSync = null;
     let statusChange = null;
 
+    const settingsManager = window.pulsesyncApi.getSettings("BetterQueue");
+    settingsManager.onChange(settings => {
+        applySettings(settings);
+    })
+
+    function applySettings(settings = undefined, root = undefined) {
+        if (root === undefined) {
+            root = document.querySelector(".FullscreenPlayerDesktopContent_root__tKNGK .FullscreenPlayerDesktopPoster_root__d__YD")
+        }
+        if (settings === undefined) {
+            settings = settingsManager.getCurrent();
+        }
+        console.log(root, settings)
+        if (!root || !settings) return;
+        root.style.setProperty("--cover-width-multiplier", `${settings.cover_width_multiplier.value}`);
+        root.style.setProperty("--screen-width-multiplier", `${settings.screen_width_multiplier.value}`);
+    }
+
     function onOpen(node) {
         const root = node.querySelector('.FullscreenPlayerDesktopContent_root__tKNGK');
-        const posterRoot = root?.querySelector('[data-test-id="FULLSCREEN_PLAYER_POSTER_CONTENT"]');
+        const posterRoot = root?.querySelector('.FullscreenPlayerDesktopPoster_root__d__YD');
+        console.log(node, root, posterRoot)
         if (!posterRoot) return;
         
+        applySettings(undefined, posterRoot);
         const queueState = window.pulsesyncApi?.playerInstance?.state?.queueState;
         if (!queueState || !queueState.entityList?.value) return;
 
@@ -234,15 +254,12 @@
     observer.observe(document.body, { childList: true, subtree: true })
 
     pulsesyncApi._waitForPlayer((player) => {
-        player.state.queueState.currentEntity.onChange(() => {
+        function onEntityChange(..._) {
             if (triggerSync) triggerSync();
-        });
-        player.state.queueState.nextEntity.onChange(() => {
-            if (triggerSync) triggerSync();
-        });
-        player.state.queueState.prevEntity.onChange(() => {
-            if (triggerSync) triggerSync();
-        });
+        }
+        player.state.queueState.currentEntity.onChange(onEntityChange);
+        player.state.queueState.nextEntity.onChange(onEntityChange);
+        player.state.queueState.prevEntity.onChange(onEntityChange);
         player.state.playerState.status.onChange(() => {
             if (statusChange) statusChange();
         });
