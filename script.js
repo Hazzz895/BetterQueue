@@ -8,6 +8,41 @@
         return id ? String(id) : "";
     }
 
+    function hexToHSL(hex) {
+        hex = hex.replace(/^#/, "");
+        if (hex.length === 3) {
+            hex = hex.split("").map(s => s + s).join("");
+        }
+
+        let r = parseInt(hex.substring(0, 2), 16) / 255;
+        let g = parseInt(hex.substring(2, 4), 16) / 255;
+        let b = parseInt(hex.substring(4, 6), 16) / 255;
+
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
+
+        if (max === min) {
+            h = s = 0; 
+        } else {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+            switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+        }
+
+        return {
+            h: Math.round(h * 360),
+            s: Math.round(s * 100),
+            l: Math.round(l * 100)
+        };
+    }
+
     function createImage() {
         const img = document.createElement("img");
         img.className = "qQ7GQU14EkggPBC6jdeS fosYvyLDok3Kjj9OWmxG FullscreenPlayerDesktopPoster_cover__CDmhM FullscreenPlayerDesktopPoster_cover_queue";
@@ -33,24 +68,26 @@
 
     function applySettings(settings = undefined, root = undefined) {
         if (root === undefined) {
-            root = document.querySelector(".FullscreenPlayerDesktopContent_root__tKNGK .FullscreenPlayerDesktopPoster_root__d__YD")
+            root = document.querySelector(".FullscreenPlayerDesktopContent_root__tKNGK");
         }
         if (settings === undefined) {
             settings = settingsManager.getCurrent();
         }
-        console.log(root, settings)
         if (!root || !settings) return;
         root.style.setProperty("--cover-width-multiplier", `${settings.cover_width_multiplier.value}`);
         root.style.setProperty("--screen-width-multiplier", `${settings.screen_width_multiplier.value}`);
+        root.style.setProperty("--gradient-width-multiplier", `${settings.gradient_size.value}`);
+        root.style.setProperty("--gradient-alpha", `${settings.show_gradient.value ? settings.gradient_alpha.value : 0}`);
+        if (publicUpdateColors) publicUpdateColors();
     }
+    let publicUpdateColors = null;
 
     function onOpen(node) {
         const root = node.querySelector('.FullscreenPlayerDesktopContent_root__tKNGK');
         const posterRoot = root?.querySelector('.FullscreenPlayerDesktopPoster_root__d__YD');
-        console.log(node, root, posterRoot)
         if (!posterRoot) return;
         
-        applySettings(undefined, posterRoot);
+        applySettings(undefined, root);
         const queueState = window.pulsesyncApi?.playerInstance?.state?.queueState;
         if (!queueState || !queueState.entityList?.value) return;
 
@@ -131,9 +168,29 @@
             const nextEntity = queueState.nextEntity?.value;
             const prevEntity = queueState.prevEntity?.value;
 
-            root.style.setProperty("--previous-track-accent-color", `${getMeta(prevEntity)?.derivedColors?.average}`);
-            root.style.setProperty("--next-track-accent-color", `${getMeta(nextEntity)?.derivedColors?.average}`);
+            const settings = settingsManager.getCurrent();
+            let prevColor = getMeta(prevEntity)?.derivedColors?.average;
+            let nextColor = getMeta(nextEntity)?.derivedColors?.average;
+            if (settings.alt_color.value) {
+                function altColor(hex) {
+                    if (!hex) return hex;
+                    const hsl = hexToHSL(hex);
+                    return `hsl(${hsl.h}, ${hsl.s}%, 20%)`;
+                }
+                prevColor = altColor(prevColor);
+                nextColor = altColor(nextColor);
+            }
+        
+            if (!prevColor) {
+                prevColor = "transparent"
+            }
+            if (!nextColor) {
+                nextColor = "transparent"
+            }
+            root.style.setProperty("--previous-track-accent-color", prevColor);
+            root.style.setProperty("--next-track-accent-color", nextColor);
         }
+        publicUpdateColors = updateColors;
 
         covers.curr = createCover(queueState.currentEntity.value, "FullscreenPlayerDesktopPoster_cover_queueActive");
         covers.prev = createCover(queueState.prevEntity?.value, "FullscreenPlayerDesktopPoster_cover_queuePrev");
