@@ -96,6 +96,18 @@ div:has(.FullscreenPlayerDesktopContent_additionalContent__tuuy7) :is(.Fullscree
     transition-duration: 300ms, 300ms, 600ms !important;
 }
 
+@property --gradient-width-multiplier {
+    syntax: '<number>';
+    initial-value: 100;
+    inherits: true;
+}
+
+@property --gradient-alpha {
+    syntax: '<number>';
+    initial-value: 60;
+    inherits: true;
+}
+
 @property --previous-track-accent-color {
   syntax: '<color>';
   initial-value: transparent;
@@ -104,9 +116,9 @@ div:has(.FullscreenPlayerDesktopContent_additionalContent__tuuy7) :is(.Fullscree
 
 .FullscreenPlayerDesktopContent_root__tKNGK::before {
     transition: --previous-track-accent-color 500ms ease, opacity 300ms ease;
-    background: linear-gradient(90deg, color-mix(in srgb, var(--previous-track-accent-color, transparent) 40%, transparent 70%) 0, transparent 100%);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--previous-track-accent-color, transparent) calc(var(--gradient-alpha) * 1%), transparent) 0, transparent 100%);
     content: "";
-    width: 10%;
+    width: calc(10% * var(--gradient-width-multiplier) / 100);
     height: 100%;
     position: absolute;
     inset-inline-start: 0;
@@ -120,9 +132,9 @@ div:has(.FullscreenPlayerDesktopContent_additionalContent__tuuy7) :is(.Fullscree
 
 .FullscreenPlayerDesktopContent_root__tKNGK::after {
     transition: --next-track-accent-color 500ms ease, opacity 300ms ease;
-    background: linear-gradient(270deg, color-mix(in srgb, var(--next-track-accent-color, transparent) 40%, transparent 70%) 0, transparent 100%);
+    background: linear-gradient(270deg, color-mix(in srgb, var(--next-track-accent-color, transparent) calc(var(--gradient-alpha) * 1%), transparent) 0, transparent 100%);
     content: "";
-    width: 10%;
+    width: calc(10% * var(--gradient-width-multiplier) / 100);
     height: 100%;
     position: absolute;
     inset-inline-end: 0;
